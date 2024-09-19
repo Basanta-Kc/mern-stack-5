@@ -40,27 +40,57 @@ function getUserAsync() {
 
 const user = getUser();
 console.log(user.name);
-const suman = getUserAsync();
-suman.then((user) => {
+
+const sumanPromise = getUserAsync();
+console.log("outside", sumanPromise);
+sumanPromise.then((user) => {
   console.log(user);
 });
 
-fetch("https://jsonplaceholder.org/posts")
-  .then((res) => {
-    res.json().then((posts) => {
-      let titles = "";
-      for (let post of posts) {
-        titles += `<li>
+async function run() {
+  const suman = await getUserAsync();
+  console.log("inside async", suman);
+}
+
+run();
+
+// fetch("https://jsonplaceholder.org/posts")
+//   .then((res) => {
+//     res.json().then((posts) => {
+//       let titles = "";
+//       for (let post of posts) {
+//         titles += `<li>
+//       <img src="${post.image}" width="200" height="200" />
+//       ${post.title}
+//       </li>`;
+//       }
+//       document.getElementById("posts").innerHTML = titles;
+//     });
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+async function getPosts() {
+  try {
+    const res = await fetch("https://jsonplaceholder.org/posts");
+    const posts = await res.json();
+    let titles = "";
+    for (let post of posts) {
+      titles += `<li>
       <img src="${post.image}" width="200" height="200" />
       ${post.title}
       </li>`;
-      }
-      document.getElementById("posts").innerHTML = titles;
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+    }
+    document.getElementById("posts").innerHTML = titles;
+  } catch (error) {
+    console.log(errors);
+  }
+}
+
+getPosts();
+console.log('heloooo')
+
 
 // promise
 // initali (pedning)
@@ -69,6 +99,8 @@ fetch("https://jsonplaceholder.org/posts")
 
 // use this api to fetch users data and show on screen
 // https://jsonplaceholder.typicode.com/users
+// getUser()
 
 // display only single post as well
 // https://jsonplaceholder.org/posts/1
+// getPost(id)
