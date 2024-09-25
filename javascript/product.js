@@ -4,16 +4,19 @@ let products = [
     name: "watch",
     price: 100,
     name: "dfsfd",
+    quantity: 2,
   },
   {
     id: 2,
     name: "shoes",
     price: 100,
+    quantity: 3,
   },
   {
     id: 3,
     name: "tshirt",
     price: 200,
+    quantity: 5,
   },
 ];
 
@@ -52,19 +55,26 @@ const deleteProduct = (id) => {
 
 // fields = { name: "test", price: "200"}
 const updateProduct = (id, field) => {
-
-  // findIndex 
+  // findIndex
   for (let i = 0; i < products.length; i++) {
     if (products[i].id === id) {
       //   if (field.name) products[i].name = field.name;
       //   if (field.price) products[i].price = field.price;
       products[i] = {
         ...products[i],
-        ...fields,
+        ...field,
       };
       return;
     }
   }
+};
+
+const getTotalPrice = () => {
+  const total = products.reduce((acc, curr) => {
+    return acc + curr.price * (curr?.quantity ?? 0);
+  }, 0);
+
+  console.log(total);
 };
 
 getProducts();
@@ -78,3 +88,4 @@ deleteProduct(3);
 getProducts();
 updateProduct(1, { name: "new name" });
 getProducts();
+getTotalPrice();
