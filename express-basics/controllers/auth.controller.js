@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const signUp = async (req, res) => {
   // req.body = {name, email, password}
@@ -47,8 +48,21 @@ const signIn = async (req, res) => {
   );
 
   if (isPasswordCorrect) {
+    // const { npassword, ...remainingUser } = user
+    // delete user.password
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        name: user.name,
+        roles: user.roles,
+      },
+      "secret",
+      { expiresIn: "10d" }
+    );
+
     res.status(200).json({
       message: "Signed In succesfully.",
+      token,
     });
     return;
   }
@@ -62,4 +76,6 @@ module.exports = {
   signUp,
   signIn,
 };
- 
+
+// signin => succes => token (123456)
+// post: /poroduct => token check => main function

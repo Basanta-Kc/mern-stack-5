@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
@@ -7,8 +8,28 @@ const getProducts = async (req, res) => {
   });
 };
 
+// const addProduct = async (req, res) => {
+//   try {
+//     const decoded = jwt.verify(req.headers.token, "secret");
+//     console.log({ decoded });
+//     await Product.create(req.body);
+//     res.json({
+//       message: "product added successfully",
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(401).json({
+//       message: "Unauthorized",
+//     });
+//   }
+// };
+
 const addProduct = async (req, res) => {
-  await Product.create(req.body);
+  await Product.create({
+    name: req.body.name,
+    price: req.body.price,
+    user: req.authUser._id,
+  });
   res.json({
     message: "product added successfully",
   });
