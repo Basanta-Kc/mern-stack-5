@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../config/constants");
 
 const signUp = async (req, res) => {
   // req.body = {name, email, password}
@@ -56,7 +57,7 @@ const signIn = async (req, res) => {
         name: user.name,
         roles: user.roles,
       },
-      "secret",
+      JWT_SECRET,
       { expiresIn: "10d" }
     );
 
