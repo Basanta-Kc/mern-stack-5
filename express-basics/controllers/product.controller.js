@@ -1,9 +1,25 @@
-const jwt = require("jsonwebtoken");
 const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
-  const products = await Product.find();
+  const { limit, page } = req.query;
+  const sort = {};
+
+  if (req.query.priceOrder) {
+    sort.price = req.query.priceOrder;
+  }
+
+  // page = 1 = skip = 0
+  // page 2 = skip = 5 (limit = 5)
+  // page 3 = skiep = 10 (limit = 5)
+
+  // skip = (page -1) * limit
+
+  const products = await Product.find()
+    .sort(sort)
+    .limit(limit)
+    .skip((page - 1) * limit); // -1,1, asc, desc
   res.json({
+    total: 10,
     data: products,
   });
 };
