@@ -22,7 +22,7 @@ const {
 //   });
 // });
 
-router.post("/sign-up", signUpValidator, signUp);
+router.post("/sign-up", signUp);
 router.post("/sign-in", signInValidator, signIn);
 
 module.exports = router;

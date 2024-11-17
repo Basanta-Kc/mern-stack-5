@@ -4,7 +4,10 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/constants");
 
 const signUp = async (req, res) => {
+  // throw new Error("test")
   // req.body = {name, email, password}
+  // req.boyd.name
+  // user.name.father.name
   const userExist = await User.findOne({
     email: req.body.email,
   });

@@ -43,6 +43,7 @@ const getProducts = async (req, res) => {
 const addProduct = async (req, res) => {
   await Product.create({
     name: req.body.name,
+    image: req.file.filename,
     price: req.body.price,
     user: req.authUser._id,
   });
