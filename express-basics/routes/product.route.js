@@ -21,6 +21,7 @@ const {
   updateProduct,
   getProducts,
   addProduct,
+  createOrder,
 } = require("../controllers/product.controller");
 
 router.get("/", getProducts);
@@ -28,5 +29,6 @@ router.post("/", checkAuth("Admin"), upload.single("image"), addProduct); // (re
 router.patch("/:id", checkAuth("Admin"), updateProduct);
 router.delete("/:id", checkAuth("Super Admin"), deleteProduct);
 router.get("/:id", getProductById);
+router.post("/order", checkAuth(), createOrder);
 
 module.exports = router;

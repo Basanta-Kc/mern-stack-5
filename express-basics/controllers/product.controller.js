@@ -1,3 +1,4 @@
+const Order = require("../models/Order");
 const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
@@ -13,13 +14,24 @@ const getProducts = async (req, res) => {
   // page 3 = skiep = 10 (limit = 5)
 
   // skip = (page -1) * limit
+  const filter = {};
 
-  const products = await Product.find()
+  if (req.query.minPrice && req.query.maxPrice) {
+    filter.price = {
+      $gte: req.query.minPrice,
+      $lte: req.query.maxPrice,
+    };
+  }
+
+  const products = await Product.find(filter)
     .sort(sort)
     .limit(limit)
     .skip((page - 1) * limit); // -1,1, asc, desc
+
+  const total = await Product.countDocuments(filter);
+
   res.json({
-    total: 10,
+    total,
     data: products,
   });
 };
@@ -81,10 +93,32 @@ const getProductById = async (req, res) => {
   });
 };
 
+const createOrder = async (req, res) => {
+  const { products } = req.body;
+
+  let total = 0;
+  for (let product of products) {
+    const dbProduct = await Product.findOne({ _id: product._id });
+    product.price = dbProduct.price;
+    total += product.quantity * product.price;
+  }
+
+  await Order.create({
+    user: req.authUser._id,
+    products,
+    total,
+  });
+
+  res.json({
+    message: "Order places succesfully,",
+  });
+};
+// products: {id, quantity, price}
 module.exports = {
   getProductById,
   deleteProduct,
   updateProduct,
   getProducts,
   addProduct,
+  createOrder,
 };

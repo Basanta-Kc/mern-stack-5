@@ -15,3 +15,9 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
+
+// user => basanta
+// products => watch(50), ihpone
+
+// orders(userId, products: [ {id,quantity, price }] , totalPrice: 100)
+// 
