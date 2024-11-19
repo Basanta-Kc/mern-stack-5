@@ -37,6 +37,9 @@ const checkAuthOld = (req, res, next) => {
   }
 };
 
+//route.post('product', checkAuth, createProduct) // (req,res,next) => {}
+// checkAuth('Admin')
+
 const checkAuthAdmin = (req, res, next) => {
   try {
     const decoded = jwt.verify(req.headers.token, "secret");
