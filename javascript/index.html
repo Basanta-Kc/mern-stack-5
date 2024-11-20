@@ -29,6 +29,12 @@
     <ul id="posts">
       <li>title</li>
     </ul> -->
-    <script src="github.js"></script>
+    <script>
+      const todos = ["learn ,html", "lean css"];
+
+      localStorage.setItem("todos", JSON.stringify(todos));
+      const todosFromLocal = localStorage.getItem("todos");
+      console.log(JSON.parse(todosFromLocal));
+    </script>
   </body>
 </html>

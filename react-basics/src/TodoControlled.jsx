@@ -1,42 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
-
-// setState(2) setState((prev) => {  return 2})
-// useState(0) useState(() => {
-// })
-
-const getValueFromLocalstorage = () => {
-  const todos = localStorage.getItem("todos");
-  return JSON.parse(todos);
-};
-
 function App() {
+  // let newTodo = "";
   const [indexToBeEdited, setIndexToBeEdited] = useState(null);
   const [newTodo, setNewTodo] = useState("");
-  const [todos, setTodos] = useState(getValueFromLocalstorage);
+  const [todos, setTodos] = useState(["learn html", "learn php", "learn css"]);
+  // const todos = ["learn html", "learn php", "learn css"];
 
-  // useEffect(() => {
-  //   console.log("first useefeect");
-  // });
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos])
-
-  // useEffect(() => {
-  //   console.log("second useeffect");
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("third useeffect");
-  // }, [newTodo]);
-
-  // useEffect(() => {
-  //   console.log("fourth effect");
-  // }, [todos]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleAdd = () => {
     if (indexToBeEdited == null) {
       todos.push(newTodo);
     } else {
@@ -48,6 +19,7 @@ function App() {
   };
 
   const handleChange = (e) => {
+    // newTodo = e.target.value;
     setNewTodo(e.target.value);
   };
 
@@ -58,15 +30,13 @@ function App() {
     setTodos(updatedTodos);
   };
 
+  console.log({ indexToBeEdited });
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input value={newTodo} type="text" onChange={handleChange} />
-        <button type="submit">
-          {indexToBeEdited == null ? "Add" : "Update"}
-        </button>
-      </form>
-
+      <input value={newTodo} type="text" onChange={handleChange} />
+      <button onClick={handleAdd}>
+        {indexToBeEdited == null ? "Add" : "Update"}
+      </button>
       <ul>
         {todos.map((todo, index) => {
           return (
@@ -97,3 +67,15 @@ function App() {
 }
 
 export default App;
+//addevenlister((e) => {})
+// count = 0
+// setCount(1)  , count 1, 0
+
+// todos = []
+// setTodos(todos) = ["larnexpress"]
+
+// todos = ["123", "learnhtml"]
+
+// index = 0 ,
+// index =1
+// todos = todos.filter((todo, index) => index !== deletedIndex  )

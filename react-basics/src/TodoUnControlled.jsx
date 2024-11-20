@@ -1,54 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
-
-// setState(2) setState((prev) => {  return 2})
-// useState(0) useState(() => {
-// })
-
-const getValueFromLocalstorage = () => {
-  const todos = localStorage.getItem("todos");
-  return JSON.parse(todos);
-};
-
 function App() {
+  // let newTodo = "";
+  const todoInputRef = useRef(null); // document.getElementById('input")
   const [indexToBeEdited, setIndexToBeEdited] = useState(null);
   const [newTodo, setNewTodo] = useState("");
-  const [todos, setTodos] = useState(getValueFromLocalstorage);
-
-  // useEffect(() => {
-  //   console.log("first useefeect");
-  // });
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos])
-
-  // useEffect(() => {
-  //   console.log("second useeffect");
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("third useeffect");
-  // }, [newTodo]);
-
-  // useEffect(() => {
-  //   console.log("fourth effect");
-  // }, [todos]);
+  const [todos, setTodos] = useState(["learn html", "learn php", "learn css"]);
+  // const todos = ["learn html", "learn php", "learn css"];
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const todo = todoInputRef.current.value;
     if (indexToBeEdited == null) {
-      todos.push(newTodo);
+      todos.push(todo);
     } else {
       todos[indexToBeEdited] = newTodo;
     }
     setTodos([...todos]);
+    todoInputRef.current.value = "";
     setNewTodo("");
     setIndexToBeEdited(null);
   };
 
   const handleChange = (e) => {
-    setNewTodo(e.target.value);
+    // newTodo = e.target.value;
+    setNewTodo(e.target.value + "basanta");
   };
 
   const handleDelete = (toBeDeletedIndex) => {
@@ -58,10 +34,11 @@ function App() {
     setTodos(updatedTodos);
   };
 
+  console.log({ indexToBeEdited });
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input value={newTodo} type="text" onChange={handleChange} />
+        <input ref={todoInputRef} type="text" />
         <button type="submit">
           {indexToBeEdited == null ? "Add" : "Update"}
         </button>
@@ -97,3 +74,15 @@ function App() {
 }
 
 export default App;
+//addevenlister((e) => {})
+// count = 0
+// setCount(1)  , count 1, 0
+
+// todos = []
+// setTodos(todos) = ["larnexpress"]
+
+// todos = ["123", "learnhtml"]
+
+// index = 0 ,
+// index =1
+// todos = todos.filter((todo, index) => index !== deletedIndex  )
