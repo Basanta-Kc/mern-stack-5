@@ -58,6 +58,7 @@ const addProduct = async (req, res) => {
     image: req.file.filename,
     price: req.body.price,
     user: req.authUser._id,
+    featured: req.body.featured,
   });
   res.json({
     message: "product added successfully",
@@ -93,6 +94,15 @@ const getProductById = async (req, res) => {
   });
 };
 
+const getFeaturedProducts = async (req, res) => {
+  const featuredProducts = await Product.find({ featured: true }).limit(4);
+  res.json({
+    data: featuredProducts,
+  });
+};
+
+// todo: getLatesProducts  Produc.find().sort({createdAt: "desc"}).limit(4)
+
 const createOrder = async (req, res) => {
   const { products } = req.body;
 
@@ -121,4 +131,5 @@ module.exports = {
   getProducts,
   addProduct,
   createOrder,
+  getFeaturedProducts,
 };

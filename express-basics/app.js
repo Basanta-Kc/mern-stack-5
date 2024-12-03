@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("express-async-errors");
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/product.route");
@@ -9,6 +10,9 @@ const port = 3000;
 
 connectDB();
 
+app.use(express.static("uploads"));
+
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/products", productRoutes);
