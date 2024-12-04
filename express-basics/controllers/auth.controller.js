@@ -23,6 +23,7 @@ const signUp = async (req, res) => {
 
   await User.create({
     email: req.body.email,
+    name: req.body.name,
     password: hashedPassword,
   });
 
@@ -64,9 +65,12 @@ const signIn = async (req, res) => {
       { expiresIn: "10d" }
     );
 
+    delete user.password;
+
     res.status(200).json({
       message: "Signed In succesfully.",
       token,
+      data: user,
     });
     return;
   }

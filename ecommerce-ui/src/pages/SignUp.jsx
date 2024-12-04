@@ -11,6 +11,15 @@ import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useNavigate } from "react-router";
+
+const signUp = async (data) => {
+  const res = await axios.post("http://localhost:3000/api/auth/sign-up", data);
+  console.log(res);
+  return res;
+};
 
 const schema = yup
   .object({
@@ -21,6 +30,7 @@ const schema = yup
   .required();
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -28,9 +38,19 @@ export default function SignUp() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit = (data) => console.log(data);
 
-  console.log(errors);
+  const mutation = useMutation({
+    mutationFn: signUp,
+    onSuccess: () => {
+      navigate("/sign-in");
+    },
+  });
+
+  const onSubmit = (data) => {
+    mutation.mutate(data);
+  };
+
+  console.log(mutation);
   // <input name="email" onc
   return (
     <Stack
@@ -46,9 +66,12 @@ export default function SignUp() {
         >
           Sign Up
         </Typography>
-        <Alert sx={{ my: 2 }} severity="error">
-          Example error message
-        </Alert>
+        {mutation.error && (
+          <Alert sx={{ my: 2 }} severity="error">
+            {mutation.error?.response?.data?.message ?? "Something went wrong."}
+          </Alert>
+        )}
+
         <Box
           component="form"
           noValidate

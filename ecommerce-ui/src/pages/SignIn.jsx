@@ -8,9 +8,52 @@ import Stack from "@mui/material/Stack";
 import Card from "@mui/material/Card";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { useAuthUser } from "../App";
 
+const signIn = async (data) => {
+  const res = await axios.post("http://localhost:3000/api/auth/sign-in", data);
+  console.log(res);
+  return res;
+};
 
-export default function SignUp() {
+const schema = yup
+  .object({
+    email: yup.string().email().required(),
+    password: yup.string().required(),
+  })
+  .required();
+
+export default function SignIn() {
+  const { setAuthUser } = useAuthUser();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const mutation = useMutation({
+    mutationFn: signIn,
+    onSuccess: (res) => {
+      setAuthUser(res.data.data);
+      navigate("/");
+    },
+  });
+
+  const onSubmit = (data) => {
+    mutation.mutate(data);
+  };
+
+  console.log(mutation);
+  // <input name="email" onc
   return (
     <Stack
       sx={{ width: "80%", mx: "auto" }}
@@ -25,12 +68,16 @@ export default function SignUp() {
         >
           Sign In
         </Typography>
-        <Alert sx={{ my: 2 }} severity="error">
-          Example error message
-        </Alert>
+        {mutation.error && (
+          <Alert sx={{ my: 2 }} severity="error">
+            {mutation.error?.response?.data?.message ?? "Something went wrong."}
+          </Alert>
+        )}
+
         <Box
           component="form"
           noValidate
+          onSubmit={handleSubmit(onSubmit)}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -48,8 +95,9 @@ export default function SignUp() {
               autoComplete="email"
               fullWidth
               variant="outlined"
-              error={true}
-              helperText="Please enter a valid email address"
+              error={Boolean(errors.email)}
+              helperText={errors.email?.message}
+              {...register("email")}
             />
           </FormControl>
           <FormControl>
@@ -64,18 +112,16 @@ export default function SignUp() {
               autoComplete="current-password"
               fullWidth
               variant="outlined"
-              error={true}
-              helperText="Password must meet complexity requirements"
+              error={Boolean(errors.password)}
+              helperText={errors.password?.message}
+              {...register("password")}
             />
           </FormControl>
-          <Button type="button" fullWidth variant="contained">
+          <Button type="submit" fullWidth variant="contained">
             Sign In
           </Button>
           <Typography sx={{ textAlign: "center" }}>
-            Dont Have an account?{" "}
-            <Link to="/sign-up">
-              Sign Up
-            </Link>
+            Dont have an account? <Link to="/sign-up">Sign UP</Link>
           </Typography>
         </Box>
       </Card>
