@@ -13,13 +13,13 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useAuthUser } from "../App";
+import { useNavigate } from "react-router";
 
 const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBar() {
   const { authUser, setAuthUser } = useAuthUser();
-  console.log(authUser);
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -115,7 +115,7 @@ function NavBar() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
+            {/* {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
@@ -123,7 +123,26 @@ function NavBar() {
               >
                 {page}
               </Button>
-            ))}
+            ))} */}
+            <Button
+              onClick={() => {
+                navigate("/products");
+              }}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              Products
+            </Button>
+
+            {!authUser && (
+              <Button
+                onClick={() => {
+                  navigate("/sign-in");
+                }}
+                sx={{ my: 2, color: "white", display: "block", ml: "auto" }}
+              >
+                Sign In
+              </Button>
+            )}
           </Box>
           {authUser && (
             <Box sx={{ flexGrow: 0 }}>
@@ -149,7 +168,7 @@ function NavBar() {
                 onClose={handleCloseUserMenu}
               >
                 {authUser?.roles?.includes("Admin") && (
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => navigate("/dashboard")}>
                     <Typography sx={{ textAlign: "center" }}>
                       Dashboard
                     </Typography>

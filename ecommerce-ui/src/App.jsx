@@ -1,9 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Home from "./pages/Home";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import { useState, useEffect, createContext, useContext } from "react";
+import Products from "./pages/Products";
+import NavBar from "./components/NavBar";
+import Dashboard from "./pages/dashboard/Dashboard";
+import DashboardProducts from "./pages/dashboard/DashboardProducts";
+import ProductForm from "./pages/dashboard/ProductForm";
 
 const queryClient = new QueryClient();
 const AuthUserContext = createContext(null);
@@ -14,9 +19,37 @@ export const useAuthUser = () => {
 
 const getValueFromLocalstorage = () => {
   const authUser = localStorage.getItem("authUser");
-  console.log(typeof authUser, authUser)
+  console.log(typeof authUser, authUser);
   return authUser ? JSON.parse(authUser) : null;
 };
+
+function HomeLayout() {
+  return (
+    <>
+      <NavBar />
+      <Outlet />
+    </>
+  );
+}
+
+function GuestRoutes() {
+  const { authUser } = useAuthUser();
+  if (authUser) return <Navigate to="/" />;
+  return <Outlet />;
+}
+
+function ProtectedRoutes() {
+  const { authUser } = useAuthUser();
+  console.log({ authUser });
+  if (!authUser) return <Navigate to="/sign-in" />;
+  return <Outlet />;
+}
+
+function AdminRoutes() {
+  const { authUser } = useAuthUser();
+  if (authUser.roles.includes("Admin")) return <Outlet />;
+  return <Navigate to="/" />;
+}
 
 function App() {
   const [authUser, setAuthUser] = useState(getValueFromLocalstorage);
@@ -31,9 +64,29 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
+            <Route element={<HomeLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route element={<ProtectedRoutes />}>
+                <Route path="/orders" element={<h2>Orders Page</h2>} />
+                <Route path="/profile" element={<h2>Profile</h2>} />
+              </Route>
+            </Route>
+
+            <Route element={<AdminRoutes />}>
+              <Route path="dashboard" element={<Dashboard />}>
+                <Route index element={<h2>welcome to dasbhoard</h2>} />
+                <Route path="products" element={<DashboardProducts />} />
+                <Route path="products/add" element={<ProductForm />} />
+                <Route path="products/edit/:productId" element={<ProductForm />} />
+                <Route path="orders" element={<h2>Orders List</h2>} />
+                <Route path="users" element={<h2>Users list</h2>} />
+              </Route>
+            </Route>
+            <Route element={<GuestRoutes />}>
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
@@ -42,3 +95,5 @@ function App() {
 }
 
 export default App;
+
+// search, authentication by cookies, delete (toast, invlaidate quereis) , add, edit.

@@ -29,7 +29,7 @@ router.get("/", getProducts);
 router.get("/featured", getFeaturedProducts);
 router.post("/", checkAuth(), upload.single("image"), addProduct); // (req,res,next) => {}
 router.patch("/:id", checkAuth("Admin"), updateProduct);
-router.delete("/:id", checkAuth("Super Admin"), deleteProduct);
+router.delete("/:id", checkAuth("Admin"), deleteProduct);
 router.get("/:id", getProductById);
 router.post("/order", checkAuth(), createOrder);
 

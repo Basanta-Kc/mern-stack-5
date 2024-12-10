@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Typography } from "@mui/material";
-import NavBar from "../components/NavBar";
 import ProductCard from "../components/Product";
 import Skeleton from "@mui/material/Skeleton";
 import Grid from "@mui/material/Grid2";
@@ -20,7 +19,6 @@ export default function Home() {
 
   return (
     <>
-      <NavBar />
       <img src="/banner.jpg" width="100%" />
       <Typography variant="h4" align="center" marginY={2}>
         Featured Products
