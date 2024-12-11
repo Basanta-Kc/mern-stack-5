@@ -15,15 +15,22 @@ import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const addProduct = async (data) => {
+const addOrUpdateProduct = async (data, productId) => {
   const formData = new FormData();
   formData.append("name", data.name);
   formData.append("price", data.price);
-  formData.append("image", data.image[0]);
-  formData.append("featured", data.featured);
+  formData.append("featured", Boolean(data.featured));
+  if (data.image[0]) formData.append("image", data.image[0]);
+
+  if (productId) {
+    const res = await axios.patch(`/api/products/${productId}`, formData);
+    return res;
+  }
+
   const res = await axios.post("/api/products", formData);
-  console.log(res);
   return res;
 };
 
@@ -41,6 +48,7 @@ const schema = yup
   .required();
 
 export default function ProductForm() {
+  const [previewImg, setPreviewImg] = useState("");
   const navigate = useNavigate();
   const { productId } = useParams();
   const action = productId ? "Edit" : "Add";
@@ -49,6 +57,7 @@ export default function ProductForm() {
     handleSubmit,
     formState: { errors },
     setValue,
+    getFieldState
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -59,18 +68,21 @@ export default function ProductForm() {
     enabled: Boolean(productId),
   });
 
-  if (productId && query.isSuccess) {
-    setValue("name", query.data.name);
-    setValue("price", query.data.price);
-    setValue("featured", query.data.featured);
-  }
-
-  console.log(query);
+  useEffect(() => {
+    if (query.isSuccess) {
+      setValue("name", query.data.name);
+      setValue("price", query.data.price);
+      setValue("featured", query.data.featured);
+    }
+  }, [query.isSuccess]);
 
   const mutation = useMutation({
-    mutationFn: addProduct,
-    onSuccess: () => {
+    mutationFn: (data) => addOrUpdateProduct(data, productId),
+    onSuccess: (res) => {
       navigate("/dashboard/products");
+      toast(res.data.message, {
+        type: 'success'
+      })
     },
   });
 
@@ -110,8 +122,24 @@ export default function ProductForm() {
           }}
         >
           <FormControl>
-            <FormLabel htmlFor="name">Name</FormLabel>
-            <input type="file" {...register("image")} />
+            <FormLabel htmlFor="image">Image</FormLabel>
+            <input
+              type="file"
+              {...register("image")}
+              onChange={(e) => {
+                const url = URL.createObjectURL(e.target.files[0]);
+                setPreviewImg(url);
+              }}
+            />
+          {(previewImg || query?.data?.image) &&   <Box
+              component="img"
+              src={
+                previewImg
+                  ? previewImg
+                  : `http://localhost:3000/${query?.data?.image}`
+              }
+              sx={{ width: "200px", mt: 2 }}
+            />}
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="name">Name</FormLabel>

@@ -9,6 +9,8 @@ import NavBar from "./components/NavBar";
 import Dashboard from "./pages/dashboard/Dashboard";
 import DashboardProducts from "./pages/dashboard/DashboardProducts";
 import ProductForm from "./pages/dashboard/ProductForm";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const queryClient = new QueryClient();
 const AuthUserContext = createContext(null);
@@ -78,7 +80,10 @@ function App() {
                 <Route index element={<h2>welcome to dasbhoard</h2>} />
                 <Route path="products" element={<DashboardProducts />} />
                 <Route path="products/add" element={<ProductForm />} />
-                <Route path="products/edit/:productId" element={<ProductForm />} />
+                <Route
+                  path="products/edit/:productId"
+                  element={<ProductForm />}
+                />
                 <Route path="orders" element={<h2>Orders List</h2>} />
                 <Route path="users" element={<h2>Users list</h2>} />
               </Route>
@@ -90,6 +95,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
+      <ToastContainer />
     </AuthUserContext.Provider>
   );
 }

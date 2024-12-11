@@ -2,7 +2,7 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
-  const { limit, page } = req.query;
+  const { limit, page, search } = req.query;
   const sort = {};
 
   if (req.query.priceOrder) {
@@ -15,6 +15,11 @@ const getProducts = async (req, res) => {
 
   // skip = (page -1) * limit
   const filter = {};
+
+  if (search) {
+    // name like %test%
+    filter.name = new RegExp(search);
+  }
 
   if (req.query.minPrice && req.query.maxPrice) {
     filter.price = {
@@ -66,7 +71,18 @@ const addProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  await Product.updateOne({ _id: req.params.id }, req.body);
+  const product = {
+    name: req.body.name,
+    price: req.body.price,
+    user: req.authUser._id,
+    featured: req.body.featured,
+  };
+
+  if (req?.file?.filename) {
+    product.image = req.file.filename;
+  }
+
+  await Product.updateOne({ _id: req.params.id }, product);
   res.json({
     message: "product updated succesfully.",
   });
@@ -133,3 +149,4 @@ module.exports = {
   createOrder,
   getFeaturedProducts,
 };
+
