@@ -1,5 +1,8 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const stripe = require("stripe")(
+  "sk_test_51M2ALFFEon6AQRRqZGoTHmXZFVSKoxQVoFRYpjpHMNeZ7CuWF2i2MEuVXCLDRGceLSR9Fh1tjLQp5aUK76gEHyX100Oz1EleVm"
+);
 
 const getProducts = async (req, res) => {
   const { limit, page, search } = req.query;
@@ -123,10 +126,22 @@ const createOrder = async (req, res) => {
   const { products } = req.body;
 
   let total = 0;
+  const line_items = [];
   for (let product of products) {
     const dbProduct = await Product.findOne({ _id: product._id });
     product.price = dbProduct.price;
     total += product.quantity * product.price;
+    const price = await stripe.prices.create({
+      currency: "usd",
+      unit_amount: product.price * 100,
+      product_data: {
+        name: dbProduct.name,
+      },
+    });
+    line_items.push({
+      price: price.id,
+      quantity: product.quantity
+    });
   }
 
   await Order.create({
@@ -135,8 +150,15 @@ const createOrder = async (req, res) => {
     total,
   });
 
+  const session = await stripe.checkout.sessions.create({
+    success_url: "http://localhost:5173/success",
+    line_items,
+    mode: "payment",
+  });
+
   res.json({
     message: "Order places succesfully,",
+    url: session.url,
   });
 };
 // products: {id, quantity, price}
@@ -149,4 +171,3 @@ module.exports = {
   createOrder,
   getFeaturedProducts,
 };
-

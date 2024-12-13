@@ -9,7 +9,7 @@ import Card from "@mui/material/Card";
 import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -57,7 +57,8 @@ export default function ProductForm() {
     handleSubmit,
     formState: { errors },
     setValue,
-    getFieldState
+    control,
+    getValues,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -72,6 +73,7 @@ export default function ProductForm() {
     if (query.isSuccess) {
       setValue("name", query.data.name);
       setValue("price", query.data.price);
+      alert(query.data.featured);
       setValue("featured", query.data.featured);
     }
   }, [query.isSuccess]);
@@ -81,8 +83,8 @@ export default function ProductForm() {
     onSuccess: (res) => {
       navigate("/dashboard/products");
       toast(res.data.message, {
-        type: 'success'
-      })
+        type: "success",
+      });
     },
   });
 
@@ -131,15 +133,17 @@ export default function ProductForm() {
                 setPreviewImg(url);
               }}
             />
-          {(previewImg || query?.data?.image) &&   <Box
-              component="img"
-              src={
-                previewImg
-                  ? previewImg
-                  : `http://localhost:3000/${query?.data?.image}`
-              }
-              sx={{ width: "200px", mt: 2 }}
-            />}
+            {(previewImg || query?.data?.image) && (
+              <Box
+                component="img"
+                src={
+                  previewImg
+                    ? previewImg
+                    : `http://localhost:3000/${query?.data?.image}`
+                }
+                sx={{ width: "200px", mt: 2 }}
+              />
+            )}
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="name">Name</FormLabel>

@@ -12,13 +12,17 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useAuthUser } from "../App";
+import Badge from "@mui/material/Badge";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { useAuthUser } from "../providers/AuthProvider";
 import { useNavigate } from "react-router";
+import { useCart } from "../providers/CartProvider";
 
 const pages = ["Products", "Pricing", "Blog"];
 
 function NavBar() {
   const { authUser, setAuthUser } = useAuthUser();
+  const { cart } = useCart();
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -146,6 +150,14 @@ function NavBar() {
           </Box>
           {authUser && (
             <Box sx={{ flexGrow: 0 }}>
+              <Badge
+                badgeContent={cart.length}
+                color="error"
+                sx={{ mr: 2 }}
+                onClick={() => navigate("/cart")}
+              >
+                <AddShoppingCartIcon />
+              </Badge>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt={authUser?.name} src={"fdsfa.jpg"} />
