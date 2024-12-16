@@ -5,6 +5,11 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/product.route");
 const authRoutes = require("./routes/auth.route");
+const stripe = require("stripe")(
+  "sk_test_51M2ALFFEon6AQRRqZGoTHmXZFVSKoxQVoFRYpjpHMNeZ7CuWF2i2MEuVXCLDRGceLSR9Fh1tjLQp5aUK76gEHyX100Oz1EleVm"
+);
+
+const Order = require("./models/Order");
 
 const app = express();
 const port = 3000;
@@ -15,6 +20,37 @@ app.use(express.static("uploads"));
 
 app.use(cors());
 app.use(cookieParser());
+
+// move the request handler logic to order controller
+const endpointSecret =
+  "whsec_4e432bec602c524f16450de5d256b34138cbecf1397183ae80e77a02d2664d3e";
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  async (request, response) => {
+    const sig = request.headers["stripe-signature"];
+    const event = stripe.webhooks.constructEvent(
+      request.body,
+      sig,
+      endpointSecret
+    );
+
+    // Handle the event
+    switch (event.type) {
+      case "checkout.session.completed":
+        const { orderId } = event.data.object.metadata;
+        console.log({ orderId });
+        await Order.updateOne({ _id: orderId }, { status: "completed" });
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
+  }
+);
 
 app.use(express.json());
 

@@ -92,6 +92,9 @@ const updateProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
+  // todo: delete image from upload folde when we delete product
+  // hint: fetch product detail get the image name and use fs.unlink() function to delte image
+
   await Product.deleteOne({ _id: req.params.id });
   res.json({
     message: "product delete sucesfully.",
@@ -121,7 +124,7 @@ const getFeaturedProducts = async (req, res) => {
 };
 
 // todo: getLatesProducts  Produc.find().sort({createdAt: "desc"}).limit(4)
-
+// Todo: create orders contorller and move createOrder, getOrders, and stripe webhoook code to controller
 const createOrder = async (req, res) => {
   const { products } = req.body;
 
@@ -140,25 +143,61 @@ const createOrder = async (req, res) => {
     });
     line_items.push({
       price: price.id,
-      quantity: product.quantity
+      quantity: product.quantity,
     });
   }
 
-  await Order.create({
+  // await Order.create({
+  //   user: req.authUser._id,
+  //   products,
+  //   total,
+  // });
+
+  const order = new Order({
     user: req.authUser._id,
     products,
     total,
   });
 
+  const { _id: orderId } = await order.save();
+
   const session = await stripe.checkout.sessions.create({
     success_url: "http://localhost:5173/success",
     line_items,
     mode: "payment",
+    metadata: {
+      orderId: orderId.toString(),
+    },
   });
 
   res.json({
     message: "Order places succesfully,",
     url: session.url,
+  });
+};
+
+const getOrders = async (req, res) => {
+  const { limit, page, status } = req.query;
+  console.log(req.authUser);
+  const filter = {
+    // while doing this for dasbhoard remove the user filter
+    user: req.authUser._id,
+  };
+
+  if (status) {
+    filter.status = status;
+  }
+  console.log(filter);
+
+  const orders = await Order.find(filter)
+    .limit(limit)
+    .skip((page - 1) * limit);
+
+  const total = await Order.countDocuments(filter);
+
+  res.json({
+    total,
+    data: orders,
   });
 };
 // products: {id, quantity, price}
@@ -169,5 +208,6 @@ module.exports = {
   getProducts,
   addProduct,
   createOrder,
+  getOrders,
   getFeaturedProducts,
 };

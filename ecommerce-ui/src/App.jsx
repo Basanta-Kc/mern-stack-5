@@ -17,6 +17,7 @@ import {
 import HomeLayout from "./layouts/HomeLayout";
 import AuthProvider from "./providers/AuthProvider";
 import Cart from "./pages/Cart";
+import Orders from "./pages/user/Orders";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +37,7 @@ function App() {
                 />
                 <Route path="/cart" element={<Cart />} />
                 <Route element={<ProtectedRoutes />}>
-                  <Route path="/orders" element={<h2>Orders Page</h2>} />
+                  <Route path="/orders" element={<Orders />} />
                   <Route path="/profile" element={<h2>Profile</h2>} />
                 </Route>
               </Route>

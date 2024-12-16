@@ -16,7 +16,6 @@ export default function Home() {
     queryFn: getFeaturedProducts,
   });
 
-
   return (
     <>
       <img src="/banner.jpg" width="100%" />
@@ -27,16 +26,16 @@ export default function Home() {
         {query.isLoading ? (
           <>
             <Grid size={{ md: 3 }}>
-              <Skeleton variant="rectangular" height={250}  />
+              <Skeleton variant="rectangular" height={250} />
             </Grid>
             <Grid size={{ md: 3 }}>
               <Skeleton variant="rectangular" height={250} />
             </Grid>{" "}
             <Grid size={{ md: 3 }}>
-              <Skeleton variant="rectangular" height={250}  />
+              <Skeleton variant="rectangular" height={250} />
             </Grid>{" "}
             <Grid size={{ md: 3 }}>
-              <Skeleton variant="rectangular" height={250}  />
+              <Skeleton variant="rectangular" height={250} />
             </Grid>
           </>
         ) : (

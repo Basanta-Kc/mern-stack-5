@@ -23,14 +23,16 @@ const {
   addProduct,
   createOrder,
   getFeaturedProducts,
+  getOrders,
 } = require("../controllers/product.controller");
 
 router.get("/", getProducts);
 router.get("/featured", getFeaturedProducts);
 router.post("/", checkAuth(), upload.single("image"), addProduct); // (req,res,next) => {}
-router.patch("/:id", checkAuth("Admin"),upload.single("image"), updateProduct);
+router.patch("/:id", checkAuth("Admin"), upload.single("image"), updateProduct);
 router.delete("/:id", checkAuth("Admin"), deleteProduct);
-router.get("/:id", getProductById);
+router.get("/orders", checkAuth(), getOrders); // api/products/orders
+router.get("/:id", getProductById); // api/products/j-value-aye-pani =>getPRoductById
 router.post("/order", checkAuth(), createOrder);
 
 module.exports = router;

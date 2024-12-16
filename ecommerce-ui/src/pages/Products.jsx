@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import ProductSekeleton from "../components/ProductSkeleton";
 import Grid from "@mui/material/Grid2";
 import ProductCard from "../components/Product";
