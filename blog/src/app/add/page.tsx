@@ -1,5 +1,6 @@
 import connectMongo from "@/lib/db";
 import Post from "@/models/Post";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export default function AddBlog() {
@@ -11,6 +12,7 @@ export default function AddBlog() {
     console.log({ title, content });
     await connectMongo();
     await Post.create({ title, content });
+    revalidatePath("/");
     redirect("/");
   };
   return (
